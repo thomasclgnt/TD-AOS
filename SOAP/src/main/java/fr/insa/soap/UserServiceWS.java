@@ -15,7 +15,7 @@ public class UserServiceWS {
         @WebParam(name = "id") int id, 
         @WebParam(name = "name") String name, 
         @WebParam(name = "email") String email, 
-        @WebParam(name = "role") String role
+        @WebParam(name = "role") Role role
     ) {
         User user = new User(id, name, email, role);
         return userService.addUser(user);

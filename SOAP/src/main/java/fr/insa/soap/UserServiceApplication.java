@@ -15,7 +15,7 @@ public class UserServiceApplication {
 	
     public static void main(String[] args) throws MalformedURLException {
     	new UserServiceApplication().demarrerService();
-    	System.out.println("Le service a démarré");
+    	System.out.println("Le service a démarré à l'adresse : http://localhost:8090/?wsdl");
     }
 
 }

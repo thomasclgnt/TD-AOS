@@ -4,10 +4,10 @@ public class User {
     private int id;
     private String name;
     private String email;
-    private String role; // Roles: "demandeur", "benevole", "valideur"
+    private Role role; // Roles: "demandeur", "benevole", "valideur"
   
     // Constructeur
-    public User(int id, String name, String email, String role) {
+    public User(int id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -39,12 +39,16 @@ public class User {
         this.email = email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
+    
+//    public void setRoleFromString(String roleName) {
+//        this.role = Role.fromString(roleName);
+//    }
 
 }
