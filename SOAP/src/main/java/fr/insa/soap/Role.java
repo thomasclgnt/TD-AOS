@@ -21,6 +21,6 @@ public enum Role {
                 return role;
             }
         }
-        throw new IllegalArgumentException("Role invalide : " + roleName);
+        throw new IllegalArgumentException("Role invalide : " + roleName + ". Essayez à nouveau.");
     }
 }
