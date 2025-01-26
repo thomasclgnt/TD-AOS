@@ -1,5 +1,6 @@
 package fr.insa.soa.RESTProject.User;
 
+import fr.insa.soa.RESTProject.Demande.DemandeResource;
 import fr.insa.soa.RESTProject.User.User;
 import java.util.ArrayList;
 
@@ -23,7 +24,11 @@ public class UserResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<User> getUsers () {
+	public ArrayList<User> getUsers (@Context UriInfo uriInfo) {
+		for (User user : UserList) {
+			user.addLink(getUriForSelf(uriInfo, user), "self", "GET");
+	        user.addLink(getUriForDemande(uriInfo), "Demande", "GET");
+        }
 		return UserList;
 	}
 	
@@ -32,7 +37,8 @@ public class UserResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public User addUser(@QueryParam("name") String name,
 					    @QueryParam("email") String email,
-					    @QueryParam("role") String role) {
+					    @QueryParam("role") String role,
+    					@Context UriInfo uriInfo) {
 		
 		// Vérification des paramètres
         if (name == null || email == null || role == null) {
@@ -45,10 +51,11 @@ public class UserResource {
         // Attribution d'un ID basé sur la place de l'user dans la liste
 		int id = UserList.size() + 1; // L'ID commence à 1
         User user = new User(id, name, email, role);
-        
         UserList.add(user) ;
         
         // rajouteraddLinks et URI Builder
+        user.addLink(getUriForSelf(uriInfo, user), "self", "GET");
+        user.addLink(getUriForDemande(uriInfo), "Demande", "GET");
 
         return user;
     }
@@ -56,10 +63,12 @@ public class UserResource {
 	@GET
 	@Path("/{idUser}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public User getUserById(@PathParam("idUser") int id) {
+	public User getUserById(@PathParam("idUser") int id, @Context UriInfo uriInfo) {
 		
 		for (User user : UserList) {
 	        if (user.getId() == id) {
+	        	user.addLink(getUriForSelf(uriInfo, user), "self", "GET");
+	            user.addLink(getUriForDemande(uriInfo), "Demande", "GET");
 	            return user; // Retourner l'utilisateur s'il est trouvé
 	        }
 	    }
@@ -88,5 +97,24 @@ public class UserResource {
 	        throw new NotFoundException("Utilisateur avec l'ID " + id + " non trouvé.");
 	    }
 	}
+	
+	
+	// Méthodes pour générer les URI (HATEOAS)
+    
+    private String getUriForSelf(UriInfo uriInfo, User user) {
+        return uriInfo.getBaseUriBuilder()
+                      .path(UserResource.class)
+                      .path(UserResource.class, "getUserById")
+                      .resolveTemplate("idUser", user.getId())
+                      .build()
+                      .toString();
+    }
+    
+    private String getUriForDemande(UriInfo uriInfo) {
+        return uriInfo.getBaseUriBuilder()
+                      .path(DemandeResource.class)
+                      .build()
+                      .toString();
+    }
 	
 }
