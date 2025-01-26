@@ -9,17 +9,77 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import fr.insa.soa.RESTProject.Demande.Statut;
 import fr.insa.soa.RESTProject.User.User;
+import fr.insa.soa.RESTProject.User.UserResource;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriInfo;
 
 @Path("demandes")
 public class DemandeResource {
 	
 	private static final ArrayList<Demande> demandes = new ArrayList<>();
 
+	private String getUriforSelf(UriInfo uriInfo, Demande demande) {
+		String url=uriInfo.getBaseUriBuilder()
+				.path(DemandeResource.class)
+				.path(Long.toString(demande.getId()))
+				.build()
+				.toString();
+		return url;
+	}
+	
+	private String getUriforUser(UriInfo uriInfo) {
+		String url=uriInfo.getBaseUriBuilder()
+				.path(UserResource.class)
+				.build()
+				.toString();
+		return url;
+	}
+	
+	private String getUriforValidate(UriInfo uriInfo, Demande demande) {
+		String url=uriInfo.getBaseUriBuilder()
+				.path(DemandeResource.class)
+				.path(DemandeResource.class, "validerDemande")
+				.resolveTemplate("id", demande.getId())
+				.build()
+				.toString();
+		return url;
+	}
+	
+	private String getUriforRefuse(UriInfo uriInfo, Demande demande) {
+		String url=uriInfo.getBaseUriBuilder()
+				.path(DemandeResource.class)
+				.path(DemandeResource.class, "refuserDemande")
+				.resolveTemplate("id", demande.getId())
+				.build()
+				.toString();
+		return url;
+	}
+	
+	private String getUriforCancel(UriInfo uriInfo, Demande demande) {
+		String url=uriInfo.getBaseUriBuilder()
+				.path(DemandeResource.class)
+				.path(DemandeResource.class, "annulerDemande")
+				.resolveTemplate("id", demande.getId())
+				.build()
+				.toString();
+		return url;
+	}
+	
+	private String getUriforAssignWorker(UriInfo uriInfo, Demande demande) {
+		String url=uriInfo.getBaseUriBuilder()
+				.path(DemandeResource.class)
+				.path(DemandeResource.class, "assignerBenevole")
+				.resolveTemplate("id", demande.getId())
+				.build()
+				.toString();
+		return url;
+	}
+	
 	// Obtenir toutes les demandes
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,11 +105,20 @@ public class DemandeResource {
     // Créer une nouvelle demande
     @POST
     @Path("/new")
-    public Demande creerDemande(@QueryParam("description") String description) {
+    public Demande creerDemande(@QueryParam("description") String description, @Context UriInfo uriInfo ) {
     	
     	int id = demandes.size()+1;
     	User usertest = new User(10, "thomas", "thomas@mail.com", "demandeur");
         Demande demande = new Demande(id, description, usertest, Statut.CREEE);
+        
+        // AJout des liens vers les autres ressources liées à demande
+        demande.addLink(getUriforSelf(uriInfo, demande),"self", "GET");
+        demande.addLink(getUriforUser(uriInfo), "User", "GET");
+        demande.addLink(getUriforValidate(uriInfo, demande),"validate-demand", "PUT");
+        demande.addLink(getUriforRefuse(uriInfo, demande),"refuse-demand", "PUT");
+        demande.addLink(getUriforCancel(uriInfo, demande),"cancel-demand", "PUT");
+        demande.addLink(getUriforAssignWorker(uriInfo, demande),"self", "PUT");
+        
         // Demande demande = new Demande(id, description, demandeur, Statut.CREEE);
         demandes.add(demande);
         return demande;
@@ -60,18 +129,18 @@ public class DemandeResource {
     @PUT
     @Path("/validate/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean validerDemande(@PathParam("id") int idDemande) {
+    public Demande validerDemande(@PathParam("id") int idDemande) {
     	
     	User valideur = new User(10, "thomas", "thomas@mail.com", "valideur");
         for (Demande demande : demandes) {
             if (demande.getId() == idDemande && demande.getStatut() == Statut.CREEE) {
                 demande.setValideur(valideur);
                 demande.setStatut(Statut.VALIDEE);
-                return true;
+                return demande;
             }
         }
         
-        return false; // Échec si la demande n'est pas trouvée ou déjà traitée
+        return null; // Échec si la demande n'est pas trouvée ou déjà traitée
         
     }
     
@@ -79,7 +148,7 @@ public class DemandeResource {
     @PUT
     @Path("/refuse/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean refuserDemande(@PathParam("id") int idDemande, @QueryParam("motif") String motifRefus) {
+    public Demande refuserDemande(@PathParam("id") int idDemande, @QueryParam("motif") String motifRefus) {
     	
     	User valideur = new User(10, "thomas", "thomas@mail.com", "valideur");
     	
@@ -89,17 +158,17 @@ public class DemandeResource {
                 demande.setMotifRefus(motifRefus);
                 demande.setStatut(Statut.REFUSEE);
                 
-                return true;
+                return demande;
             }
         }
-        return false; // Échec si la demande n'est pas trouvée ou déjà traitée
+        return null; // Échec si la demande n'est pas trouvée ou déjà traitée
     }
     
     // Annuler une demande
     @PUT
     @Path("/cancel/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean annulerDemande(@PathParam("id") int idDemande) {
+    public Demande annulerDemande(@PathParam("id") int idDemande) {
     	
     	User valideur = new User(10, "thomas", "thomas@mail.com", "valideur");
     	
@@ -108,17 +177,17 @@ public class DemandeResource {
             	demande.setValideur(valideur);
                 demande.setStatut(Statut.ANNULEE);
                 
-                return true;
+                return demande;
             }
         }
-        return false; // Échec si la demande n'est pas trouvée ou non annulable
+        return null; // Échec si la demande n'est pas trouvée ou non annulable
     }
     
     // Assigner un travailleur à une demande
     @PUT
     @Path("/assignWorker/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean assignerBenevole(@PathParam("id") int idDemande) {
+    public Demande assignerBenevole(@PathParam("id") int idDemande) {
     	
     	User benevole = new User(10, "thomas", "thomas@mail.com", "benevole");
     	
@@ -126,10 +195,10 @@ public class DemandeResource {
             if (demande.getId() == idDemande && demande.getStatut() == Statut.CREEE) {
             	demande.setBenevole(benevole);
                 demande.setStatut(Statut.PRISE_EN_CHARGE);
-                return true;
+                return demande;
             }
         }
-        return false; // Échec si la demande n'est pas trouvée ou non assignable
+        return null; // Échec si la demande n'est pas trouvée ou non assignable
         
     }
     

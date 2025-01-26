@@ -1,5 +1,7 @@
 package fr.insa.soa.RESTProject.Demande;
 
+import java.util.ArrayList;
+
 import fr.insa.soa.RESTProject.Demande.Statut;
 import fr.insa.soa.RESTProject.User.User;
 
@@ -11,6 +13,7 @@ public class Demande {
     private User valideur;
     private Statut statut;
     private String motifRefus;
+    private ArrayList<Link> links = new ArrayList<Link>();
       
     // Constructeur 
     public Demande(int id, String description, User demandeur, Statut statut) {
@@ -78,10 +81,26 @@ public class Demande {
     public void setStatut(Statut statut) {
         this.statut = statut;
     }
+    
+    public void setStatutfromString(String statutName) {
+    	this.statut = Statut.fromString(statutName);
+    }
 
     public void setMotifRefus(String motifRefus) {
         this.motifRefus = motifRefus;
     }
+    
+    public void addLink(String uri, String rel, String methode) {
+		Link newLink = new Link() ;
+		newLink.setUri(uri);
+		newLink.setRel(rel);
+		newLink.setMethode(methode);
+		links.add(newLink);
+	}
+	
+	public ArrayList<Link> getLinks(){
+		return links ;
+	}
 }
 
 
