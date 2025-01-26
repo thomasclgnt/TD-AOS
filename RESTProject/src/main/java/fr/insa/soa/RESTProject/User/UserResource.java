@@ -4,6 +4,7 @@ import fr.insa.soa.RESTProject.User.User;
 import java.util.ArrayList;
 
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -64,6 +65,28 @@ public class UserResource {
 	    }
 		
 		throw new NotFoundException("Utilisateur avec l'ID " + id + " non trouvé.");
+	}
+	
+	@DELETE
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("delete/{idUser}")
+	public String deleteUser(@PathParam("idUser") int id) {
+	    User userToRemove = null;
+	    
+	    for (User user : UserList) {
+	        if (user.getId() == id) {
+	            userToRemove = user;
+	            break;
+	        }
+	    }
+
+	    // Si l'utilisateur existe, on le supprime
+	    if (userToRemove != null) {
+	        UserList.remove(userToRemove);
+	        return "Utilisateur " + userToRemove.getName() + " supprimé." ;
+	    } else {
+	        throw new NotFoundException("Utilisateur avec l'ID " + id + " non trouvé.");
+	    }
 	}
 	
 	
