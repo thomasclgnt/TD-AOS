@@ -25,10 +25,6 @@ public class UserResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<User> getUsers (@Context UriInfo uriInfo) {
-		for (User user : UserList) {
-			user.addLink(getUriForSelf(uriInfo, user), "self", "GET");
-	        user.addLink(getUriForDemande(uriInfo), "Demande", "GET");
-        }
 		return UserList;
 	}
 	
@@ -67,8 +63,6 @@ public class UserResource {
 		
 		for (User user : UserList) {
 	        if (user.getId() == id) {
-	        	user.addLink(getUriForSelf(uriInfo, user), "self", "GET");
-	            user.addLink(getUriForDemande(uriInfo), "Demande", "GET");
 	            return user; // Retourner l'utilisateur s'il est trouvé
 	        }
 	    }
