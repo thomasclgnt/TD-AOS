@@ -1,7 +1,6 @@
 package fr.insa.soa.RESTProject.User;
 
 import fr.insa.soa.RESTProject.Demande.DemandeResource;
-import fr.insa.soa.RESTProject.User.User;
 import java.util.ArrayList;
 
 import jakarta.ws.rs.BadRequestException;
@@ -51,7 +50,9 @@ public class UserResource {
         
         // rajouteraddLinks et URI Builder
         user.addLink(getUriForSelf(uriInfo, user), "self", "GET");
+        user.addLink(getUriForAllUsers(uriInfo), "all-users", "GET");
         user.addLink(getUriForDemande(uriInfo), "Demande", "GET");
+        user.addLink(getUriForDelete(uriInfo, user), "delete-user", "DELETE");
 
         return user;
     }
@@ -96,19 +97,37 @@ public class UserResource {
 	// Méthodes pour générer les URI (HATEOAS)
     
     private String getUriForSelf(UriInfo uriInfo, User user) {
-        return uriInfo.getBaseUriBuilder()
+        String url = uriInfo.getBaseUriBuilder()
                       .path(UserResource.class)
-                      .path(UserResource.class, "getUserById")
-                      .resolveTemplate("idUser", user.getId())
+                      .path(Long.toString(user.getId()))
                       .build()
                       .toString();
+        return url;
     }
     
     private String getUriForDemande(UriInfo uriInfo) {
-        return uriInfo.getBaseUriBuilder()
+    	String url = uriInfo.getBaseUriBuilder()
                       .path(DemandeResource.class)
                       .build()
                       .toString();
+    	return url;
     }
 	
+    private String getUriForDelete(UriInfo uriInfo, User user) {
+    	String url = uriInfo.getBaseUriBuilder()
+                      .path(UserResource.class)
+                      .path(UserResource.class, "deleteUser")
+                      .resolveTemplate("idUser", user.getId())
+                      .build()
+                      .toString();
+    	return url;
+    }
+    
+    private String getUriForAllUsers(UriInfo uriInfo) {
+    	String url = uriInfo.getBaseUriBuilder()
+                      .path(UserResource.class)
+                      .build()
+                      .toString();
+        return url;
+    }
 }
