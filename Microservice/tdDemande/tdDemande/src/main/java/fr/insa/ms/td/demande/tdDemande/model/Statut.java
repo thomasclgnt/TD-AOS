@@ -1,10 +1,10 @@
 package fr.insa.ms.td.demande.tdDemande.model;
 
 public enum Statut {
-    CREEE("créée"),
-    VALIDEE("benevole"),
-    REFUSEE("valideur"),
-    ANNULEE("annulée"),
+    CREEE("creee"),
+    VALIDEE("validee"),
+    REFUSEE("refusee"),
+    ANNULEE("annulee"),
     PRISE_EN_CHARGE("prise en charge");
 
     private final String valeur;

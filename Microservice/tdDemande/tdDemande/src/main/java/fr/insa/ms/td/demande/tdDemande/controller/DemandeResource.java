@@ -6,6 +6,7 @@ import fr.insa.ms.td.demande.tdDemande.model.Statut;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/demandes")
@@ -25,10 +26,11 @@ public class DemandeResource {
     }
     
     // Obtenir les demandes par statut
-    @GetMapping("/statut/{statut}")
-    public ArrayList<Demande> getDemandebyStatus(@PathVariable String in_statut) {
+    @GetMapping("/statut/{url_statut}")
+    public ArrayList<Demande> getDemandebyStatus(@PathVariable String url_statut) {
     	
-    	Statut statut = Statut.fromString(in_statut);
+    	Statut statut = Statut.fromString(url_statut);
+    	System.out.println(statut);
     	ArrayList<Demande> resultat = new ArrayList<Demande>();
     	
     	for (Demande demande : demandes) {
@@ -55,7 +57,9 @@ public class DemandeResource {
     // Créer une demande
     // On utilise des RequestParam donc avec les paramètres directement dans l'url sous la forme : /demandes/new?description=Mission 1&idDemandeur=1
     @PostMapping("/new")
-    public Demande createDemande(@RequestParam String description, @RequestParam int idDemandeur) {
+    public Demande createDemande(@RequestBody Map<String, Object> data) {
+    	String description = (String) data.get("description");
+        int idDemandeur = (int) data.get("idDemandeur");
         int id = demandes.size() + 1;
         Demande d = new Demande(id, description, idDemandeur, Statut.CREEE);
         demandes.add(d);

@@ -41,11 +41,14 @@ public class UserResource {
     // Récupérer un utilisateur par ID
     @GetMapping("/users/{id}")
     public User getUserById(@PathVariable int id) {
+    	System.out.println("Users");
         for (User user : users) {
             if (user.getId() == id) {
-                return user;
+            	System.out.println("user : " + user.getName() + ", " + user.getRole().getRoleName());
+            	return user;
             }
         }
+        System.out.println("null");
         return null;
     }
 	

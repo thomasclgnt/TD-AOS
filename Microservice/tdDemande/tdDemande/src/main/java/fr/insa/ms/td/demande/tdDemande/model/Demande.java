@@ -21,6 +21,10 @@ public class Demande {
 		this.IdDemandeur = idDemandeur;
 		this.statut = statut;
 	}
+    
+    public Demande() {
+    	
+    }
 
 
 	// Getters

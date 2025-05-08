@@ -15,6 +15,10 @@ public class User {
 	        this.role = role;
 	    }
 	    
+	    public User() {
+	    	
+	    }
+	    
 	    public User(int id, String name, String email, String role) {
 	        this.id = id;
 	        this.name = name;

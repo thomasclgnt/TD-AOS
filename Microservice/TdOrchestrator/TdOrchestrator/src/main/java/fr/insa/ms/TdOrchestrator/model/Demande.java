@@ -8,6 +8,8 @@ public class Demande {
     private int IdValideur;
     private Statut statut;
     private String motifRefus;
+    
+    public Demande() {}
           
     // Constructeur 
     public Demande(int id, String description, int idDemandeur, Statut statut) {

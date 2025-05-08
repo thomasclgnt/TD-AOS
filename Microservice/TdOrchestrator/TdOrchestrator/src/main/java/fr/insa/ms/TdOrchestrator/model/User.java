@@ -6,6 +6,8 @@ public class User {
 	    private String name;
 	    private String email;
 	    private Role role; // Roles: "demandeur", "benevole", "valideur"
+	    
+	    public User() {}
 	   	  
 	    // Constructeurs
 	    public User(int id, String name, String email, Role role) {
